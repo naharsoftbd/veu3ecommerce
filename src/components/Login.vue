@@ -78,7 +78,8 @@ export default {
 
       function onSubmit() {
         isLogedIn = fetchData();
-        this.$router.push("/products");
+        //this.$router.push("/products");
+        //console.log(this.$router);
       }
 
     return {
