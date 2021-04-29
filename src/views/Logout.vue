@@ -7,18 +7,20 @@
 <script>
 // @ is an alias to /src
 import { ref, onMounted} from "vue";
+import router from '../router';
 export default {
   name: 'Home',
 setup(){
-let LogedIn = ref(true);
+let isLogedIn = ref(true);
 onMounted(()=>{
       if(localStorage.getItem("user_id")){
        localStorage.clear();
-       this.$router.push("/");
+       router.push('/');
+       isLogedIn = false;
       }
     });
     return {
-      LogedIn
+      isLogedIn
     };
   }
 }

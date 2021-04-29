@@ -21,7 +21,7 @@ const routes = [
   }
   ,
   {
-    path: '/products',
+    path: '/products/:user_id',
     name: 'Products',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
@@ -73,7 +73,7 @@ const router = createRouter({
 })
 router.beforeEach((to, from, next) => {
     if(to.matched.some(record => record.meta.ishome) && IsAuthenticated()) {
-      if (IsAuthenticated()) next('/products');
+      if (IsAuthenticated()) next('/products/'+localStorage.getItem("user_id"));
       else next("/");
     }else{
       next();

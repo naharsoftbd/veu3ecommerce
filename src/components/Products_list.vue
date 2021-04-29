@@ -37,6 +37,7 @@
 
 <script>
 import { ref, onMounted} from "vue";
+import { useRoute } from 'vue-router';
 export default {
   name: 'Products_list',
   props: {
@@ -46,11 +47,13 @@ export default {
     const data = ref(null);
     const loading = ref(true);
     const error = ref(null);
+    const route = useRoute();
+    let isLogedIn = ref(false);
    function fetchData() {
       loading.value = true;
   // I prefer to use fetch
   // you can use use axios as an alternative
-  return fetch('http://localhost/wedevsecom/?products=read', {
+  return fetch('http://localhost/wedevsecom/?products=read&user_id='+localStorage.getItem("user_id"), {
     method: 'get',
     //mode: "no-cors",
     headers: {
@@ -97,7 +100,9 @@ export default {
     return {
       data,
       loading,
-      error
+      error,
+      route,
+      isLogedIn
     };
 }
 }

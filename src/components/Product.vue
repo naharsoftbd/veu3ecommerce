@@ -26,7 +26,7 @@
 
 <script>
 import { ref, onMounted} from "vue";
-import { useRoute } from 'vue-router'
+import { useRoute } from 'vue-router';
 export default {
   name: 'Product',
   props: {

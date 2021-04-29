@@ -12,6 +12,8 @@
 
 <script>
 import { ref, onMounted} from "vue";
+import { useRoute } from 'vue-router';
+import router from '../router';
 export default {
   name: 'Login',
   props: {
@@ -23,7 +25,7 @@ export default {
     const error = ref(null);
     let isLogedIn = ref(null);
     const model = ref({ username: "", password: ""});
-
+    const route = useRoute();
 
    function fetchData() {
       loading.value = true;
@@ -54,6 +56,7 @@ export default {
       data.value = json.user;
       console.log(data.value[0].id);
       localStorage.setItem("user_id",data.value[0].id);
+      router.push({ name: 'Products', params: { user_id: data.value[0].id } });
     })
     .catch(err => {
       error.value = err;
@@ -78,8 +81,7 @@ export default {
 
       function onSubmit() {
         isLogedIn = fetchData();
-        //this.$router.push("/products");
-        //console.log(this.$router);
+        
       }
 
     return {
@@ -88,7 +90,8 @@ export default {
       error,
       model,
       onSubmit,
-      isLogedIn
+      isLogedIn,
+      route
     };
 }
 }
