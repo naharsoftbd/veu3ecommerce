@@ -1,29 +1,19 @@
 <template>
   <div class="hello">
-    <h1>{{ msg }}</h1>
+    <h1>{{ product?.name }}</h1>
     
   </div>
   <div class="container">
-        <h3 class="p-3 text-center">Products </h3>
-        <table class="table table-striped table-bordered">
-            <thead>
-                <tr>
-                    <th>Product Id</th>
-                    <th>Product Name</th>
-                    <th>Product Price</th>
-                    <th>Product Image</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="product in data" :key="product.id">
-                    <td>{{product.id}}</td>
-                    <td><router-link :to="/product/+product.id" class ="btn btn-info">{{product.name}}</router-link></td>
-                    <td>{{product.price}}</td>
-                    <td><router-link :to="/product/+product.id" class ="btn btn-info"><img alt="Vue logo" :src="product.image"  width="100"></router-link></td>
-                    
-                </tr>
-            </tbody>
-        </table>
+        <div class="product_image">
+          <img alt="Vue logo" :src="product?.image"  width="400">
+        </div>
+        <div class="product_desc">
+          {{product?.description}}
+        </div>
+        <br>
+        <div class="product_meta">
+        <button class="btn btn-success pull-left">Add to Cart</button>
+        </div>
     </div>    
   <p v-if="loading">
    Still loading..
@@ -32,13 +22,13 @@
 
 
   </p>
-  
 </template>
 
 <script>
 import { ref, onMounted} from "vue";
+import { useRoute } from 'vue-router'
 export default {
-  name: 'Products_list',
+  name: 'Product',
   props: {
     msg: String
   },
@@ -46,11 +36,13 @@ export default {
     const data = ref(null);
     const loading = ref(true);
     const error = ref(null);
+    const route = useRoute();
+    const product = ref(null);
    function fetchData() {
       loading.value = true;
   // I prefer to use fetch
   // you can use use axios as an alternative
-  return fetch('http://localhost/wedevsecom/?products=read', {
+  return fetch('http://localhost/wedevsecom/?products=read&id='+route.params.id, {
     method: 'get',
     //mode: "no-cors",
     headers: {
@@ -73,7 +65,8 @@ export default {
     .then(json => {
       // set the response data
       data.value = json.products;
-      console.log(data.value);
+     product.value = data.value[0];
+
     })
     .catch(err => {
       error.value = err;
@@ -97,7 +90,9 @@ export default {
     return {
       data,
       loading,
-      error
+      error,
+      route,
+      product
     };
 }
 }
@@ -122,8 +117,32 @@ a {
 .container{
   text-align:center;
   margin: 0 auto;
+  padding:0 15px;
 }
 .container table{
   width:100%;
+}
+.product_image{
+  float:left;
+  width:40%;
+  
+}
+.product_desc{
+  float:left;
+  padding-left:15px;
+  padding-bottom:10px;
+  width:56%;
+  text-align:left;
+
+  
+}
+.product_meta{
+  float:left;
+  padding-left:15px;
+  
+  
+}
+.pull-left{
+  float:left;
 }
 </style>
