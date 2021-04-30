@@ -8,19 +8,19 @@
   <div class="form-group">
     <label class="control-label col-sm-2" for="product_name">Product Name:</label>
     <div class="col-sm-10">
-    <input name="product_name" id="product_name" type="text" class="form-control" placeholder="Product Name" required>
+    <input name="product_name" v-model="model.product_name" id="product_name" type="text" class="form-control" placeholder="Product Name" required>
      </div>
   </div>
     <div class="form-group">
     <label class="control-label col-sm-2" for="product_sku">Sku:</label>
     <div class="col-sm-10">
-    <input type="text" name="product_sku" id="product_sku" class="form-control"  placeholder = "Product Sku" required>
+    <input type="text" name="product_sku" v-model="model.product_sku" id="product_sku" class="form-control"  placeholder = "Product Sku" required>
     </div>
   </div>
   <div class="form-group">
     <label class="control-label col-sm-2" for="product_price">Price:</label>
     <div class="col-sm-10">
-    <input type="text" name="product_price" id="product_price" class="form-control"  placeholder = "Price" required>
+    <input type="text" name="product_price" v-model="model.product_price" id="product_price" class="form-control"  placeholder = "Price" required>
     </div>
   </div>
   <div class="form-group">
@@ -36,7 +36,7 @@
     <div class="form-group">
       <label class="control-label col-sm-2" for="comment">Description:</label>
       <div class="col-sm-10">
-      <textarea class="form-control" rows="5" id="comment"></textarea>
+      <textarea class="form-control" rows="5" name="description" v-model="model.description" id="comment"></textarea>
       </div>
     </div>
     <div class="form-group">
@@ -66,6 +66,7 @@ export default {
     const product = ref(null);
     let imageFile = ref("");
     let imageUrl = ref("");
+    const model = ref({ product_name: "", product_sku: "", product_price: "", description: ""});
 
 
    function fetchData(formdata) {
@@ -79,7 +80,7 @@ export default {
     mode: 'cors', // no-cors, *cors, same-origin
     cache: 'no-cache', 
     headers: {
-      'Content-Type':'application/x-www-form-urlencoded',
+      //'Content-Type':'application/x-www-form-urlencoded',
       'Accept': 'application/json',
     },
     body: JSON.stringify(datas)
@@ -125,10 +126,10 @@ export default {
     function onSubmit() {
         let formdata = new FormData();
         formdata.append("image", imageFile.value);
-        formdata.append("name", "Amazing Pillow 2.0");
-        formdata.append("price","199");
-        formdata.append("sku", "20232");
-        formdata.append("description", "The best pillow for amazing programmers.");
+        formdata.append("name", model.value.product_name);
+        formdata.append("price", model.value.product_price);
+        formdata.append("sku", model.value.product_sku);
+        formdata.append("description", model.value.description);
         formdata.append("user_id",2);
         fetchData(formdata);
         
@@ -167,7 +168,8 @@ export default {
       handleImageSelected,
       imageFile,
       imageUrl,
-      router
+      router,
+      model
     };
 }
 }
