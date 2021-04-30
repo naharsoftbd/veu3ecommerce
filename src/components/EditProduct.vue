@@ -8,19 +8,19 @@
   <div class="form-group">
     <label class="control-label col-sm-2" for="product_name">Product Name:</label>
     <div class="col-sm-10">
-    <input name="product_name" v-model="model.product_name" id="product_name" type="text" class="form-control" placeholder="Product Name" required>
+    <input name="product_name" v-model="model.name" id="product_name"  type="text" class="form-control" placeholder="Product Name" required>
      </div>
   </div>
     <div class="form-group">
     <label class="control-label col-sm-2" for="product_sku">Sku:</label>
     <div class="col-sm-10">
-    <input type="text" name="product_sku" v-model="model.product_sku" id="product_sku" class="form-control"  placeholder = "Product Sku" required>
+    <input type="text" name="product_sku" v-model="model.sku" id="product_sku" class="form-control"  placeholder = "Product Sku" required>
     </div>
   </div>
   <div class="form-group">
     <label class="control-label col-sm-2" for="product_price">Price:</label>
     <div class="col-sm-10">
-    <input type="text" name="product_price" v-model="model.product_price" id="product_price" class="form-control"  placeholder = "Price" required>
+    <input type="text" name="product_price" v-model="model.price" id="product_price" class="form-control"  placeholder = "Price" required>
     </div>
   </div>
   <div class="form-group">
@@ -54,7 +54,7 @@ import { ref, onMounted, watch } from "vue";
 import { useRoute } from 'vue-router';
 import router from '../router';
 export default {
-  name: 'CreateProduct',
+  name: 'EditProduct',
   props: {
     msg: String
   },
@@ -66,16 +66,67 @@ export default {
     const product = ref(null);
     let imageFile = ref("");
     let imageUrl = ref("");
-    const model = ref({ product_name: "", product_sku: "", product_price: "", description: ""});
+    const model = ref({ name: "", sku: "", price: "", description: ""});
 
 
-   function fetchData(formdata) {
+   function fetchData() {
+      loading.value = true;
+  // I prefer to use fetch
+  // you can use use axios as an alternative
+  return fetch('http://localhost/wedevsecom/?products=read&id='+route.params.id, {
+    method: 'get',
+    //mode: "no-cors",
+    headers: {
+      'content-type': 'application/json',
+      'Accept': 'application/json',
+      'Access-Control-Allow-Origin':'*'
+    }
+  })
+    .then(res => {
+      // a non-200 response code
+      if (!res.ok) {
+        // create error instance with HTTP status text
+        const error = new Error(res.statusText);
+        error.json = res.json();
+        throw error;
+      }
+      
+      return res.json();
+    })
+    .then(json => {
+      // set the response data
+      data.value = json.products;
+      model.value = data.value[0];
+
+    })
+    .catch(err => {
+      error.value = err;
+      // In case a custom JSON error response was provided
+      if (err.json) {
+        return err.json.then(json => {
+          // set the JSON response message
+          error.value.message = json.message;
+        });
+      }
+    })
+    .then(() => {
+      loading.value = false;
+    });
+    }
+
+    onMounted(() => {
+      fetchData();
+      
+    });
+
+    function updateData(formdata){
+
     let datas = {}; 
      for(var pair of formdata.entries()) {
        datas[pair[0]]=pair[1];
     }
     //console.log(datas);
-  return fetch('http://localhost/wedevsecom/?products=create', {
+  return fetch('http://localhost/wedevsecom/?products=update', {
     method: 'POST',
     mode: 'cors', // no-cors, *cors, same-origin
     cache: 'no-cache', 
@@ -116,22 +167,19 @@ export default {
     .then(() => {
       
     });
+    
     }
-
-    onMounted(() => {
-      //fetchData();
-      
-    });
 
     function onSubmit() {
         let formdata = new FormData();
         formdata.append("image", imageFile.value);
-        formdata.append("name", model.value.product_name);
-        formdata.append("price", model.value.product_price);
-        formdata.append("sku", model.value.product_sku);
+        formdata.append("name", model.value.name);
+        formdata.append("price", model.value.price);
+        formdata.append("sku", model.value.sku);
         formdata.append("description", model.value.description);
         formdata.append("user_id",localStorage.getItem("user_id"));
-        fetchData(formdata);
+        formdata.append("id",route.params.id);
+        updateData(formdata);
         
       }
     function handleImageSelected(event) {

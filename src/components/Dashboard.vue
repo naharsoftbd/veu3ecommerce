@@ -18,7 +18,7 @@
                     <td><router-link :to="/product/+product.id" class ="btn btn-info">{{product.name}}</router-link></td>
                     <td>{{product.price}}</td>
                     <td><router-link :to="/product/+product.id" class ="btn btn-info"><img alt="Vue logo" :src="product.image"  width="100"></router-link></td>
-                    <td><button class="btn btn-success">Edit</button> <button class="btn btn-danger">Delete</button></td>
+                    <td><router-link :to="/editproduct/+product.id" class ="btn btn-success">Edit</router-link> <button class="btn btn-danger" @click="onDelete(product.id)">Delete</button></td>
                     
                 </tr>
             </tbody>
@@ -37,6 +37,7 @@
 <script>
 import { ref, onMounted} from "vue";
 import { useRoute } from 'vue-router';
+import router from '../router';
 export default {
   name: 'Dashboard',
   props: {
@@ -95,13 +96,56 @@ export default {
     onMounted(() => {
       fetchData();
     });
+    function onDelete(product_id) {
+
+    return fetch('http://localhost/wedevsecom/?products=delete&product_id='+product_id, {
+    method: 'get',
+    //mode: "no-cors",
+    headers: {
+      'content-type': 'application/json',
+      'Accept': 'application/json',
+      'Access-Control-Allow-Origin':'*'
+    }
+  })
+    .then(res => {
+      // a non-200 response code
+      if (!res.ok) {
+        // create error instance with HTTP status text
+        const error = new Error(res.statusText);
+        error.json = res.json();
+        throw error;
+      }
+      
+      return res.json();
+    })
+    .then(json => {
+      // set the response data
+      data.value = json.products;
+      router.push({ name: 'Dashboard'});
+    })
+    .catch(err => {
+      error.value = err;
+      // In case a custom JSON error response was provided
+      if (err.json) {
+        return err.json.then(json => {
+          // set the JSON response message
+          error.value.message = json.message;
+        });
+      }
+    })
+    .then(() => {
+      loading.value = false;
+    });
+    }
 
     return {
       data,
       loading,
       error,
       route,
-      isLogedIn
+      isLogedIn,
+      onDelete,
+      router
     };
 }
 }
