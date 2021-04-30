@@ -26,7 +26,10 @@
   <div class="form-group">
     <label class="control-label col-sm-2" for="product_image">Image:</label>
     <div class="col-sm-10">
-    <input type="file" name="product_image" id="product_image" class="form-control"  placeholder = "Price" required>
+    <img v-show="imageUrl"
+           :src="imageUrl"
+           class="w-10 h-10 object-cover">
+    <input type="file" accept="image/*" name="product_image" id="product_image" class="form-control"  placeholder = "Price" required @change="handleImageSelected">
     </div>
   </div>
    
@@ -43,18 +46,13 @@
   </div>
 </form>
     </div>    
-  <p v-if="loading">
-   Still loading..
-  </p>
-  <p v-if="error">
-
-
-  </p>
+  
 </template>
 
 <script>
-import { ref, onMounted} from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useRoute } from 'vue-router';
+import router from '../router';
 export default {
   name: 'CreateProduct',
   props: {
@@ -66,23 +64,25 @@ export default {
     const error = ref(null);
     const route = useRoute();
     const product = ref(null);
-   function fetchData() {
-      loading.value = true;
-  // I prefer to use fetch
-  // you can use use axios as an alternative
-  return fetch('http://localhost/wedevsecom/?products=create&user_id=2', {
-    method: 'post',
+    let imageFile = ref("");
+    let imageUrl = ref("");
+
+
+   function fetchData(formdata) {
+    let datas = {}; 
+     for(var pair of formdata.entries()) {
+       datas[pair[0]]=pair[1];
+    }
+    //console.log(datas);
+  return fetch('http://localhost/wedevsecom/?products=create', {
+    method: 'POST',
     mode: 'cors', // no-cors, *cors, same-origin
     cache: 'no-cache', 
     headers: {
       'Content-Type':'application/x-www-form-urlencoded',
       'Accept': 'application/json',
     },
-    body: JSON.stringify({"name" : "Amazing Pillow 2.0",
-    "price" : "199",
-    "sku" : "202323",
-    "description" : "The best pillow for amazing programmers.",
-    "category_id" : 2})
+    body: JSON.stringify(datas)
   })
     .then(res => {
       // a non-200 response code
@@ -98,7 +98,8 @@ export default {
     .then(json => {
       // set the response data
       data.value = json.products;
-     product.value = data.value[0];
+     //router.push({ name: 'Dashboard'});
+     console.log(json.message);
 
     })
     .catch(err => {
@@ -112,7 +113,7 @@ export default {
       }
     })
     .then(() => {
-      loading.value = false;
+      
     });
     }
 
@@ -122,9 +123,39 @@ export default {
     });
 
     function onSubmit() {
-         fetchData();
+        let formdata = new FormData();
+        formdata.append("image", imageFile.value);
+        formdata.append("name", "Amazing Pillow 2.0");
+        formdata.append("price","199");
+        formdata.append("sku", "20232");
+        formdata.append("description", "The best pillow for amazing programmers.");
+        formdata.append("user_id",2);
+        fetchData(formdata);
         
       }
+    function handleImageSelected(event) {
+    if (event.target.files.length === 0) {
+      imageFile.value = "";
+      imageUrl.value = "";
+      return;
+    }
+
+    imageFile.value = event.target.files[0];
+  }
+
+  watch(imageFile, (imageFile) => {
+    if (!(imageFile instanceof File)) {
+      return;
+    }
+
+    let fileReader = new FileReader();
+
+    fileReader.readAsDataURL(imageFile);
+
+    fileReader.addEventListener("load", () => {
+      imageUrl.value = fileReader.result;
+    });
+  });
 
     return {
       data,
@@ -132,7 +163,11 @@ export default {
       error,
       route,
       product,
-      onSubmit
+      onSubmit,
+      handleImageSelected,
+      imageFile,
+      imageUrl,
+      router
     };
 }
 }
