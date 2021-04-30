@@ -1,7 +1,14 @@
 <template >
-  <div id="nav" v-if="isLogedIn">
-    <router-link to="/" class ="btn btn-info">Home</router-link> |
-    <router-link :to="/products/+user_id" class ="btn btn-info">Products</router-link> |
+  <div id="nav" v-if="isLogedIn && user_role == 1">
+    <router-link to="/dashboard" class ="btn btn-info" >Dashboard</router-link> |
+    <router-link to="/createproduct" class ="btn btn-info" >Create Product</router-link> |
+    <router-link to="/products/" class ="btn btn-info">Products</router-link> |
+    <router-link to="/orders" class ="btn btn-info">Orders</router-link> |
+    <router-link to="/logout" class ="btn btn-info">Logout</router-link>
+   
+  </div>
+  <div id="nav" v-if="isLogedIn && user_role != 1">
+    <router-link to="/products/" class ="btn btn-info">Products</router-link> |
     <router-link to="/orders" class ="btn btn-info">Orders</router-link> |
     <router-link to="/logout" class ="btn btn-info">Logout</router-link>
    
@@ -16,6 +23,7 @@ setup() {
 
    let isLogedIn = ref(false);
    let user_id = localStorage.getItem("user_id");
+   let user_role = localStorage.getItem("user_role");
     
   onMounted(() => {
            if(localStorage.getItem("user_id")){
@@ -28,7 +36,8 @@ setup() {
     });
     return {
          isLogedIn,
-         user_id
+         user_id,
+         user_role
     };
 }
 }
@@ -48,10 +57,10 @@ setup() {
 
 #nav a {
   font-weight: bold;
-  color: #2c3e50;
+  color: #FFFFFF;
 }
 
 #nav a.router-link-exact-active {
-  color: #42b983;
+  color: #000000;
 }
 </style>

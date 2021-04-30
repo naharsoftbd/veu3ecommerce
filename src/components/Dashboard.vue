@@ -9,6 +9,7 @@
                     <th>Product Name</th>
                     <th>Product Price</th>
                     <th>Product Image</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -17,6 +18,7 @@
                     <td><router-link :to="/product/+product.id" class ="btn btn-info">{{product.name}}</router-link></td>
                     <td>{{product.price}}</td>
                     <td><router-link :to="/product/+product.id" class ="btn btn-info"><img alt="Vue logo" :src="product.image"  width="100"></router-link></td>
+                    <td><button class="btn btn-success">Edit</button> <button class="btn btn-danger">Delete</button></td>
                     
                 </tr>
             </tbody>
@@ -36,7 +38,7 @@
 import { ref, onMounted} from "vue";
 import { useRoute } from 'vue-router';
 export default {
-  name: 'Products_list',
+  name: 'Dashboard',
   props: {
     msg: String
   },

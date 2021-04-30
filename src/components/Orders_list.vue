@@ -31,7 +31,6 @@
   </p>
   <p v-if="error">
 
-
   </p>
   
 </template>

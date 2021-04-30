@@ -21,7 +21,7 @@ const routes = [
   }
   ,
   {
-    path: '/products/:user_id',
+    path: '/products',
     name: 'Products',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
@@ -48,7 +48,7 @@ const routes = [
     beforeEnter: checkAuth
   },
   {
-    path: '/order/:url',
+    path: '/order/:id',
     name: 'Order',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
@@ -63,6 +63,24 @@ const routes = [
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "about" */ '../views/Logout.vue'),
+    beforeEnter: checkAuth
+  },
+  {
+    path: '/dashboard',
+    name: 'Dashboard',
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "about" */ '../views/Dashboard.vue'),
+    beforeEnter: checkAuth
+  },
+  {
+    path: '/createproduct',
+    name: 'CreateProduct',
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "about" */ '../views/CreateProduct.vue'),
     beforeEnter: checkAuth
   }
 ]

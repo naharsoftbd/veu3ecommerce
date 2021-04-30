@@ -1,10 +1,18 @@
 <template>
-  <div class="hello">
+  <div class="container">
     <h1>{{ msg }}</h1>
-    <form novalidate @submit.prevent="onSubmit()">
-    <input name="username" type="email" v-model="model.username" placeholder="User Email">
-    <input type="password" name="password" v-model="model.password" placeholder = "Password">
-    <input type="submit" class="btn btn-success" value="Login" />
+    <form class="form-inline" @submit.prevent="onSubmit()">
+    <div class="form-row align-items-center">
+    <div class="col-auto">
+    <input name="username" type="email" class="form-control" v-model="model.username" placeholder="User Email" required>
+    </div>
+    <div class="col-auto">
+    <input type="password" name="password" class="form-control" v-model="model.password" placeholder = "Password" required>
+    </div>
+    <div class="col-auto">
+    <input type="submit" class="btn btn-primary mb-2" value="Login" />
+    </div>
+    </div>
     </form>
   </div>
   
@@ -14,6 +22,8 @@
 import { ref, onMounted} from "vue";
 import { useRoute } from 'vue-router';
 import router from '../router';
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap";
 export default {
   name: 'Login',
   props: {
@@ -54,9 +64,15 @@ export default {
     .then(json => {
       // set the response data
       data.value = json.user;
-      console.log(data.value[0].id);
+      console.log(data.value[0]);
       localStorage.setItem("user_id",data.value[0].id);
-      router.push({ name: 'Products', params: { user_id: data.value[0].id } });
+      localStorage.setItem("user_role",data.value[0].user_role);
+      if(data.value[0].user_role==1){
+        router.push({ name: 'Dashboard'});
+      }else{
+        router.push({ name: 'Products'});
+      }
+      
     })
     .catch(err => {
       error.value = err;
@@ -112,5 +128,9 @@ li {
 }
 a {
   color: #42b983;
+}
+form {
+    margin: 0 auto;
+    width: 540px;
 }
 </style>
